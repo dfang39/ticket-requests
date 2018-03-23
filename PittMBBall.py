@@ -8,7 +8,7 @@ today = datetime.date.today().strftime("%m/%d/%Y")
 
 eventFile = 'C:\\Users\\DanFang\\Desktop\\EventSeasons\\pittmbb.xlsx'
 eventwb = openpyxl.load_workbook(eventFile, data_only = True, read_only = True)
-sheet = eventwb.get_sheet_by_name('Sheet')
+sheet = eventwb['Sheet']
 eventdates = []
 eventtimes = []
 opponents = []

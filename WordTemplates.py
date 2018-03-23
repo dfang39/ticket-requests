@@ -3,6 +3,8 @@ import os
 import xlrd
 import datetime
 import mailmerge
+import openpyxl
+import math
 
 today = datetime.date.today().strftime("%m/%d/%Y")
 
@@ -105,23 +107,48 @@ if len(csc_requests) > 0:
         departure_time = datetime.datetime.time(departure_string)
 
         if request.alternate_date != "":
-            csc_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"), 'DepartureTime': departure_time.strftime("%#I:%M %p"), 'DateToday': today, 'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"), 'Notes': request.notes, 'MainContact': request.primary_contact, 'Agency': request.agency, 'city': request.city, 'Chaperone': request.chaperone_name, 'Zip': request.postal, 'Alternate': request.alternate_date.strftime("%#m/%#d/%Y") + " " + request.alternate_time.strftime("%#I:%M %p"), 'NumberAdults': str(int(request.number_adults)), 'Number': str(int(request.number_children)), 'State': request.state, 'ChaperoneCell': request.chaperone_cell, 'Address': request.address, 'Total': str(int(request.tickets_requested)), 'TransportationType': request.transportation_type, 'AgencyPhone': request.phone})
+            csc_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"),
+                              'DepartureTime': departure_time.strftime("%#I:%M %p"),
+                              'DateToday': today,
+                              'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"),
+                              'Notes': request.notes,
+                              'MainContact': request.primary_contact,
+                              'Agency': request.agency,
+                              'city': request.city,
+                              'Chaperone': request.chaperone_name,
+                              'Zip': request.postal,
+                              'Alternate': request.alternate_date.strftime("%#m/%#d/%Y") + " " + request.alternate_time.strftime("%#I:%M %p"),
+                              'NumberAdults': str(int(request.number_adults)),
+                              'Number': str(int(request.number_children)),
+                              'State': request.state,
+                              'ChaperoneCell': request.chaperone_cell,
+                              'Address': request.address,
+                              'Total': str(int(request.tickets_requested)),
+                              'TransportationType': request.transportation_type,
+                              'AgencyPhone': request.phone})
         else:
             csc_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"),
-                              'DepartureTime': departure_time.strftime("%#I:%M %p"), 'DateToday': today,
-                              'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"), 'Notes': request.notes,
-                              'MainContact': request.primary_contact, 'Agency': request.agency, 'city': request.city,
-                              'Chaperone': request.chaperone_name, 'Zip': request.postal,
+                              'DepartureTime': departure_time.strftime("%#I:%M %p"),
+                              'DateToday': today,
+                              'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"),
+                              'Notes': request.notes,
+                              'MainContact': request.primary_contact, 'Agency': request.agency,
+                              'city': request.city,
+                              'Chaperone': request.chaperone_name,
+                              'Zip': request.postal,
                               'Alternate': "",
                               'NumberAdults': str(int(request.number_adults)),
-                              'Number': str(int(request.number_children)), 'State': request.state,
-                              'ChaperoneCell': request.chaperone_cell, 'Address': request.address,
+                              'Number': str(int(request.number_children)),
+                              'State': request.state,
+                              'ChaperoneCell': request.chaperone_cell,
+                              'Address': request.address,
                               'Total': str(int(request.tickets_requested)),
-                              'TransportationType': request.transportation_type, 'AgencyPhone': request.phone})
+                              'TransportationType': request.transportation_type,
+                              'AgencyPhone': request.phone})
 
     cscdoc.merge_pages(csc_merge)
 
-    csc_request_title = 'TFK CSC Ticket Requests ' + str(today).replace("/", "-") + '.docx'
+    csc_request_title = datetime.date.today().strftime("%Y-%m-%d") + ' TFK CSC Ticket Requests.docx'
 
     cscdoc.write(csc_request_title)
 
@@ -144,11 +171,26 @@ if len(cmpgh_requests) > 0:
     for request in cmpgh_requests:
         departure_string = request.preferred_date_total + datetime.timedelta(hours=4)
         departure_time = datetime.datetime.time(departure_string)
-        cmpgh_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"), 'DepartureTime': departure_time.strftime("%#I:%M %p"), 'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"), 'Notes': request.notes, 'Agency': request.agency, 'City': request.city, 'Chaperone': request.chaperone_name, 'Zip': request.postal, 'NumberAdults': str(int(request.number_adults)), 'NumberChildren': str(int(request.number_children)), 'State': request.state, 'ChaperonePhone': request.chaperone_cell, 'Address': request.address, 'Transportation': request.transportation_type, 'KidsYoungest': str(int(request.kids_youngest)), 'KidsOldest': str(int(request.kids_oldest)) })
+        cmpgh_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"),
+                            'DepartureTime': departure_time.strftime("%#I:%M %p"),
+                            'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"),
+                            'Notes': request.notes,
+                            'Agency': request.agency,
+                            'City': request.city,
+                            'Chaperone': request.chaperone_name,
+                            'Zip': request.postal,
+                            'NumberAdults': str(int(request.number_adults)),
+                            'NumberChildren': str(int(request.number_children)),
+                            'State': request.state,
+                            'ChaperonePhone': request.chaperone_cell,
+                            'Address': request.address,
+                            'Transportation': request.transportation_type,
+                            'KidsYoungest': str(int(request.kids_youngest)),
+                            'KidsOldest': str(int(request.kids_oldest)) })
 
     cmpghdoc.merge_pages(cmpgh_merge)
 
-    cmpgh_request_title = 'TFK Children\'s Museum Ticket Requests ' + str(today).replace("/", "-") + '.docx'
+    cmpgh_request_title = datetime.date.today().strftime("%Y-%m-%d") + ' TFK Children\'s Museum Ticket Requests.docx'
 
     cmpghdoc.write(cmpgh_request_title)
 
@@ -172,22 +214,37 @@ if len(heinz_requests) > 0:
         departure_string = request.preferred_date_total + datetime.timedelta(hours=2)
         departure_time = datetime.datetime.time(departure_string)
         if request.alternate_date != "":
-            heinz_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"), 'DepartureTime': departure_time.strftime("%#I:%M %p"), 'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"), 'AlternateDate': request.alternate_date.strftime("%#m/%#d/%Y") + " " + request.alternate_time.strftime("%#I:%M %p"), 'Notes': request.notes, 'Agency': request.agency, 'Chaperone': request.chaperone_name, 'NumberAdults': str(int(request.number_adults)), 'NumberChildren': str(int(request.number_children)), 'ChaperonePhone': request.chaperone_cell, 'KidsYoungest': str(int(request.kids_youngest)), 'KidsOldest': str(int(request.kids_oldest)), 'Fax': request.fax})
+            heinz_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"),
+                                'DepartureTime': departure_time.strftime("%#I:%M %p"),
+                                'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"),
+                                'AlternateDate': request.alternate_date.strftime("%#m/%#d/%Y") + " " + request.alternate_time.strftime("%#I:%M %p"),
+                                'Notes': request.notes,
+                                'Agency': request.agency,
+                                'Chaperone': request.chaperone_name,
+                                'NumberAdults': str(int(request.number_adults)),
+                                'NumberChildren': str(int(request.number_children)),
+                                'ChaperonePhone': request.chaperone_cell,
+                                'KidsYoungest': str(int(request.kids_youngest)),
+                                'KidsOldest': str(int(request.kids_oldest)),
+                                'Fax': request.fax})
         else:
             heinz_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"),
                                 'DepartureTime': departure_time.strftime("%#I:%M %p"),
                                 'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"),
                                 'AlternateDate': "",
-                                'Notes': request.notes, 'Agency': request.agency, 'Chaperone': request.chaperone_name,
+                                'Notes': request.notes,
+                                'Agency': request.agency,
+                                'Chaperone': request.chaperone_name,
                                 'NumberAdults': str(int(request.number_adults)),
                                 'NumberChildren': str(int(request.number_children)),
                                 'ChaperonePhone': request.chaperone_cell,
                                 'KidsYoungest': str(int(request.kids_youngest)),
-                                'KidsOldest': str(int(request.kids_oldest)), 'Fax': request.fax})
+                                'KidsOldest': str(int(request.kids_oldest)),
+                                'Fax': request.fax})
 
     heinzdoc.merge_pages(heinz_merge)
 
-    heinz_request_title = 'TFK Heinz History Ticket Requests ' + str(today).replace("/", "-") + '.docx'
+    heinz_request_title = datetime.date.today().strftime("%Y-%m-%d") + ' TFK Heinz History Ticket Requests.docx'
 
     heinzdoc.write(heinz_request_title)
 
@@ -208,10 +265,286 @@ if len(mattress_requests) > 0:
 
     mattress_merge = []
     for request in mattress_requests:
-        mattress_merge.append({'PreferredDateTime': request.preferred_date.strftime("%#m/%#d/%Y") + " " + request.preferred_time.strftime("%#I:%M %p"),'NumberAdults': str(int(request.number_adults)), 'Agency': request.agency, 'Chaperone': request.chaperone_name, 'NumberChildren': str(int(request.number_children)), 'ChaperonePhone': request.chaperone_cell, "Main": request.primary_contact, "Email": request.email, "TotalTickets": str(int(request.tickets_requested))})
+        mattress_merge.append({'PreferredDateTime': request.preferred_date.strftime("%#m/%#d/%Y") + " " + request.preferred_time.strftime("%#I:%M %p"),
+                               'NumberAdults': str(int(request.number_adults)),
+                               'Agency': request.agency,
+                               'Chaperone': request.chaperone_name,
+                               'NumberChildren': str(int(request.number_children)),
+                               'ChaperonePhone': request.chaperone_cell,
+                               "Main": request.primary_contact,
+                               "Email": request.email,
+                               "Notes": request.notes,
+                               "TotalTickets": str(int(request.tickets_requested))})
 
     mattressdoc.merge_pages(mattress_merge)
 
-    mattress_request_title = 'TFK Mattress Factory Ticket Requests ' + str(today).replace("/", "-") + '.docx'
+    mattress_request_title = datetime.date.today().strftime("%Y-%m-%d") + ' TFK Mattress Factory Ticket Requests.docx'
 
     mattressdoc.write(mattress_request_title)
+
+
+# Region Carnegie Museums
+
+carnegie_requests = []
+for request in request_objects:
+    if "Carnegie Museums" in request.event:
+        carnegie_requests.append(request)
+
+print('Carnegie Museums:', len(carnegie_requests))
+
+carnegie_requests.sort(key=lambda r: r.preferred_date)
+
+if len(carnegie_requests) > 0:
+    carnegiedoc = mailmerge.MailMerge('carnegiemuseumstemplate.docx')
+    #print(cscdoc.get_merge_fields())
+
+    carnegie_merge = []
+    for request in carnegie_requests:
+
+        carnegie_merge.append({'PreferredTime': request.preferred_time.strftime("%#I:%M %p"),
+                               'PreferredDate': request.preferred_date.strftime("%#m/%#d/%Y"),
+                               'Notes': request.notes,
+                               'Agency': request.agency,
+                               'City': request.city,
+                               'ChaperoneName': request.chaperone_name,
+                               'Zip': request.postal,
+                               'NumAdults': str(int(request.number_adults)),
+                               'NumChildren': str(int(request.number_children)),
+                               'State': request.state,
+                               'ChaperoneCell': request.chaperone_cell,
+                               'Address': request.address,
+                               'Youngest': str(int(request.kids_youngest)),
+                               'Transportation': request.transportation_type,
+                               'Oldest': str(int(request.kids_oldest))})
+
+
+    carnegiedoc.merge_pages(carnegie_merge)
+
+    carnegie_request_title = datetime.date.today().strftime("%Y-%m-%d") + ' TFK Carnegie Museums Requests.docx'
+
+    carnegiedoc.write(carnegie_request_title)
+
+
+# Region Aviary
+
+aviary_requests = []
+for request in request_objects:
+    if "National Aviary" in request.event:
+        aviary_requests.append(request)
+
+print('Aviary:', len(aviary_requests))
+
+aviary_requests.sort(key=lambda r: r.preferred_date)
+
+if len(aviary_requests) > 0:
+
+    large_font = openpyxl.styles.Font(name='Calibri',size=11)
+    large_bold = openpyxl.styles.Font(name='Calibri',size=11, bold=True)
+    small_font = openpyxl.styles.Font(name='Calibri',size=9)
+    small_bold = openpyxl.styles.Font(name='Calibri',size=9, bold=True)
+    fill = openpyxl.styles.PatternFill(fill_type='solid', start_color='00C5D9F1', end_color='00C5D9F1')
+    border = openpyxl.styles.Border(left=openpyxl.styles.Side(style='thin'),right=openpyxl.styles.Side(style='thin'),top=openpyxl.styles.Side(style='thin'),bottom=openpyxl.styles.Side(style='thin'))
+
+    out_workbook = openpyxl.Workbook()
+    sheet = out_workbook.active
+
+    sheet["E1"] = "Scheduled/Reserved"
+    sheet["E1"].font = large_font
+    sheet["E1"].fill = fill
+    sheet["E1"].border = border
+    sheet.merge_cells('E1:H1')
+    sheet["I1"] = "Actual Counts"
+    sheet["I1"].font = large_bold
+    sheet["I1"].fill = fill
+    sheet["I1"].border = border
+    sheet.merge_cells('I1:K1')
+    sheet["L1"] = "MONTHLY"
+    sheet["L1"].font = large_font
+    sheet["L1"].fill = fill
+    sheet["L1"].border = border
+
+    sheet['A2'] = "DATE"
+    sheet["B2"] = "TIME"
+    sheet["C2"] = "ORG"
+    sheet["D2"] = "AGE RANGE"
+    sheet["E2"] = "KIDS"
+    sheet["F2"] = "ADULTS"
+    sheet["G2"] = "Total"
+    sheet["H2"] = "MONTHLY"
+    sheet["I2"] = "KIDS"
+    sheet["J2"] = "ADULTS"
+    sheet["K2"] = "Total"
+    sheet["L2"] = "TOTAL"
+    sheet["M2"] = "CHAPERONE NAME"
+    sheet["N2"] = "CHAPERONE PHONE"
+    sheet["O2"] = "ALTERNATE DATE"
+    sheet["P2"] = "NOTES"
+
+    column = 1
+
+    for i in range(1, 17):
+        sheet.cell(row=2, column=column).font = small_bold
+        sheet.cell(row=2, column=column).fill = fill
+        sheet.cell(row=2, column=column).border = border
+        column += 1
+
+    row_count = 3
+
+    for request in aviary_requests:
+        sheet['A' + str(row_count)] = request.preferred_date.strftime("%#m/%#d/%Y")
+        sheet["B" + str(row_count)] = request.preferred_time.strftime("%#I:%M %p")
+        sheet["C" + str(row_count)] = request.agency
+        sheet["D" + str(row_count)] = str(int(request.kids_youngest)) + " to " + str(int(request.kids_oldest))
+        sheet["E" + str(row_count)] = request.number_children
+        sheet["F" + str(row_count)] = request.number_adults
+        sheet["G" + str(row_count)] = request.tickets_requested
+        # sheet["H" + str(row_count)] = "MONTHLY"
+        # sheet["I" + str(row_count)] = "KIDS"
+        # sheet["J" + str(row_count)] = "ADULTS"
+        # sheet["K" + str(row_count)] = "Total"
+        # sheet["L" + str(row_count)] = "TOTAL"
+        sheet["M" + str(row_count)] = request.chaperone_name
+        sheet["N" + str(row_count)] = request.chaperone_cell
+        if request.alternate_date != "":
+            sheet["O" + str(row_count)] = request.alternate_date.strftime("%#m/%#d/%Y") + " " + request.alternate_time.strftime("%#I:%M %p")
+        sheet["P" + str(row_count)] = request.notes
+
+        column = 1
+
+        for i in range(1, 17):
+            sheet.cell(row=row_count, column=column).font = small_font
+            sheet.cell(row=row_count, column=column).border = border
+            column += 1
+
+        row_count += 1
+
+    sheet["E" + str(row_count)] = "Kids"
+    sheet["F" + str(row_count)] = "Adults"
+    sheet["G" + str(row_count)] = "Total"
+    # sheet["H" + str(row_count)] = 0
+    sheet["I" + str(row_count)] = "Kids"
+    sheet["J" + str(row_count)] = "Adults"
+    sheet["K" + str(row_count)] = "Total"
+    # sheet["L" + str(row_count)] = 0
+
+    sheet["E" + str(row_count)].font = small_bold
+    sheet["F" + str(row_count)].font = small_bold
+    sheet["G" + str(row_count)].font = small_bold
+    # sheet["H" + str(row_count)] = 0
+    sheet["I" + str(row_count)].font = small_bold
+    sheet["J" + str(row_count)].font = small_bold
+    sheet["K" + str(row_count)].font = small_bold
+    # sheet["L" + str(row_count)] = 0
+
+    column = 5
+    for i in range(5, 13):
+        sheet.cell(row=row_count, column=column).font = small_bold
+        sheet.cell(row=row_count, column=column).border = border
+        column += 1
+
+    row_count += 1
+
+    sheet["E" + str(row_count)] = sum(x.number_children for x in aviary_requests)
+    sheet["F" + str(row_count)] = sum(x.number_adults for x in aviary_requests)
+    sheet["G" + str(row_count)] = sum(x.tickets_requested for x in aviary_requests)
+    sheet["H" + str(row_count)] = 0
+    sheet["I" + str(row_count)] = 0
+    sheet["J" + str(row_count)] = 0
+    sheet["K" + str(row_count)] = 0
+    sheet["L" + str(row_count)] = 0
+
+    column = 5
+    for i in range(5, 13):
+        sheet.cell(row=row_count, column=column).font = small_font
+        sheet.cell(row=row_count, column=column).border = border
+        column += 1
+
+    for i in range(1, row_count + 1):
+        sheet.row_dimensions[i].height = 12
+
+    out_workbook.save(datetime.date.today().strftime("%Y-%m-%d") + ' TFK National Aviary Requests.xlsx')
+
+# region PNC
+
+pnc_requests = []
+for request in request_objects:
+    if "PNC Park Tours" in request.event:
+        pnc_requests.append(request)
+
+print('PNC:', len(pnc_requests))
+
+pnc_requests.sort(key=lambda r: r.preferred_date)
+
+if len(pnc_requests) > 0:
+    pncdoc = mailmerge.MailMerge('pnctemplate.docx')
+
+    pnc_merge = []
+    for request in pnc_requests:
+
+        numChildrenValue = request.number_children * 7
+
+        numChaperones = int(request.number_adults)
+
+        if (numChaperones > math.ceil(request.number_children / 12)):
+            numChaperones = int(math.ceil(request.number_children / 12))
+
+        numAdults = 0
+        if request.number_adults - numChaperones > 0:
+            numAdults = int(request.number_adults - numChaperones)
+
+        numAdultValue =numAdults * 7
+
+        if request.alternate_date != "":
+            pnc_merge.append({'preferredDateandTime': request.preferred_date.strftime("%#m/%#d/%Y") + " " + request.preferred_time.strftime("%#I:%M %p") + "/" + request.alternate_date.strftime("%#m/%#d/%Y") + " " + request.alternate_time.strftime("%#I:%M %p"),
+                              'notes': request.notes,
+                              'mainContact': request.primary_contact,
+                              'agencyName': request.agency,
+                              'agencyCity': request.city,
+                              'chaperone': request.chaperone_name,
+                              'agencyZip': request.postal,
+                              'agencyState': request.state,
+                              'chaperonePhone': request.chaperone_cell,
+                              'agencyAddress': request.address,
+                              'agencyPhone': request.phone,
+                              'agencyFax': request.fax,
+                              'agencyEmail': request.email,
+                              'youngest': str(int(request.kids_youngest)),
+                              'oldest': str(int(request.kids_oldest)),
+                              'numChildren': str(int(request.number_children)),
+                              'numChildrenValue': '{0:.2f}'.format(numChildrenValue),
+                              'numChaperone': str(numChaperones),
+                              'numAdults': str(numAdults),
+                              'numAdultValue': '{0:.2f}'.format(numAdultValue),
+                              'numTotal': str(int(request.tickets_requested)),
+                              'numTotalValue': '{0:.2f}'.format(numChildrenValue + numAdultValue)
+                              })
+        else:
+            pnc_merge.append({'preferredDateandTime': request.preferred_date.strftime("%#m/%#d/%Y") + " " + request.preferred_time.strftime("%#I:%M %p"),
+                              'notes': request.notes,
+                              'mainContact': request.primary_contact,
+                              'agencyName': request.agency,
+                              'agencyCity': request.city,
+                              'chaperone': request.chaperone_name,
+                              'agencyZip': request.postal,
+                              'agencyState': request.state,
+                              'chaperonePhone': request.chaperone_cell,
+                              'agencyAddress': request.address,
+                              'agencyPhone': request.phone,
+                              'agencyFax': request.fax,
+                              'agencyEmail': request.email,
+                              'youngest': str(int(request.kids_youngest)),
+                              'oldest': str(int(request.kids_oldest)),
+                              'numChildren': str(int(request.number_children)),
+                              'numChildrenValue': '{0:.2f}'.format(numChildrenValue),
+                              'numChaperone': str(numChaperones),
+                              'numAdults': str(numAdults),
+                              'numAdultValue': '{0:.2f}'.format(numAdultValue),
+                              'numTotal': str(int(request.tickets_requested)),
+                              'numTotalValue': '{0:.2f}'.format(numChildrenValue + numAdultValue)
+                              })
+
+    pncdoc.merge_pages(pnc_merge)
+
+    pnc_request_title = datetime.date.today().strftime("%Y-%m-%d") + ' TFK PNC Park Tours Ticket Requests.docx'
+
+    pncdoc.write(pnc_request_title)
